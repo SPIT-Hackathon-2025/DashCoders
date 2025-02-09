@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Executive Assistant - Email Processing</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @keyframes slideIn {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .slide-in {
+            animation: slideIn 0.5s ease-out forwards;
+        }
+        .pulse-animation {
+            animation: pulse 2s infinite;
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+        .typing-indicator::after {
+            content: '...';
+            animation: typing 1s infinite;
+        }
+        @keyframes typing {
+            0% { content: '.'; }
+            33% { content: '..'; }
+            66% { content: '...'; }
+        }
+        .task-progress {
+            transition: width 0.5s ease-out;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <div class="min-h-screen">
+        <!-- Header (Same as before) -->
+        <div class="bg-white shadow-md">
+            <div class="max-w-7xl mx-auto px-4 py-6">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-4">
+                        <div class="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center">
+                            <i class="fas fa-user-tie text-white text-xl"></i>
+                        </div>
+                        <div>
+                            <h1 class="text-2xl font-bold">Executive Assistant</h1>
+                            <p class="text-gray-600">AI Email Agent</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <span class="px-4 py-2 bg-green-100 text-green-800 rounded-full flex items-center">
+                            <span class="w-2 h-2 bg-green-500 rounded-full mr-2 pulse-animation"></span>
+                            Active
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        
+
+            <!-- Email Processing Section -->
+            <div class="mb-8" id="processingContainer">
+                <!-- Each step will be added here by JavaScript -->
+            </div>
+
+            <!-- Process New Email Button -->
+            <div class="flex justify-center mb-8">
+                <button onclick="startNewEmailProcess()" class="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">
+                    <i class="fas fa-envelope mr-2"></i>P
+                </button>
+            </div>
+
+            <!-- Main Content -->
+        <div class="max-w-7xl mx-auto px-4 py-8">
+            <!-- Previous Emails Table -->
+            <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+                <h3 class="font-semibold mb-4">Previously Processed Emails</h3>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full">
+                        <thead>
+                            <tr class="bg-gray-50">
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">From</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Subject</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Action Taken</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200" id="previousEmails">
+                            <!-- Populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Statistics Section (Same as before) -->
+            <div class="grid grid-cols-2 gap-6">
+                <!-- Email Statistics -->
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <h3 class="font-semibold mb-6">Today's Email Statistics</h3>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="bg-blue-50 p-4 rounded-lg">
+                            <div class="text-2xl font-bold text-blue-600 mb-1">24</div>
+                            <div class="text-sm text-gray-600">Processed</div>
+                        </div>
+                        <div class="bg-green-50 p-4 rounded-lg">
+                            <div class="text-2xl font-bold text-green-600 mb-1">18</div>
+                            <div class="text-sm text-gray-600">Responded</div>
+                        </div>
+                        <div class="bg-yellow-50 p-4 rounded-lg">
+                            <div class="text-2xl font-bold text-yellow-600 mb-1">5</div>
+                            <div class="text-sm text-gray-600">Pending</div>
+                        </div>
+                        <div class="bg-purple-50 p-4 rounded-lg">
+                            <div class="text-2xl font-bold text-purple-600 mb-1">8</div>
+                            <div class="text-sm text-gray-600">Flagged</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Actions -->
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <h3 class="font-semibold mb-6">Recent Actions</h3>
+                    <div class="space-y-4" id="recentActions">
+                        <!-- Populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const previousEmails = [
+            {
+                date: "2024-02-09",
+                from: "partner@accelerator.com",
+                subject: "Startup Mentorship Program",
+                action: "Meeting Scheduled",
+                status: "Completed"
+            },
+            {
+                date: "2024-02-08",
+                from: "investor@angels.com",
+                subject: "Seed Funding Discussion",
+                action: "Response Sent",
+                status: "Pending"
+            },
+            {
+                date: "2024-02-08",
+                from: "tech@startup.com",
+                subject: "Technical Support Request",
+                action: "Ticket Created",
+                status: "In Progress"
+            },
+            {
+                date: "2024-02-07",
+                from: "events@conference.com",
+                subject: "Speaking Opportunity",
+                action: "Calendar Updated",
+                status: "Completed"
+            },
+            {
+                date: "2024-02-07",
+                from: "research@university.com",
+                subject: "Collaboration Proposal",
+                action: "Meeting Scheduled",
+                status: "Completed"
+            }
+        ];
+
+        const emailTemplates = [
+            {
+                from: "investor@venture.com",
+                subject: "Investment Opportunity Discussion",
+                summary: [
+                    "Venture capital firm interested in SP-TBI startups",
+                    "Proposed investment range: $500K - $2M",
+                    "Requesting meeting next week",
+                    "Priority: High"
+                ]
+            },
+            {
+                from: "support@startup.com",
+                subject: "Startup Support Request",
+                summary: [
+                    "Early-stage startup seeking incubation",
+                    "Focus area: AI/ML Healthcare",
+                    "Team size: 5 members",
+                    "Priority: Medium"
+                ]
+            }
+        ];
+
+        let currentTemplateIndex = 0;
+
+        function populatePreviousEmails() {
+            const tbody = document.getElementById('previousEmails');
+            tbody.innerHTML = previousEmails.map(email => `
+                <tr class="hover:bg-gray-50">
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${email.date}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${email.from}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${email.subject}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${email.action}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                            ${email.status === 'Completed' ? 'bg-green-100 text-green-800' : 
+                            email.status === 'Pending' ? 'bg-yellow-100 text-yellow-800' : 
+                            'bg-blue-100 text-blue-800'}">
+                            ${email.status}
+                        </span>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        async function processEmail(template) {
+            const container = document.getElementById('processingContainer');
+            container.innerHTML = '';
+            
+            const steps = [
+                {
+                    icon: 'envelope',
+                    title: 'Processing Email',
+                    color: 'blue',
+                    content: `From: ${template.from}<br>Subject: ${template.subject}`
+                },
+                {
+                    icon: 'file-alt',
+                    title: 'Email Summary',
+                    color: 'green',
+                    content: template.summary.map(item => `<li><i class="fas fa-check-circle text-green-500 mr-2"></i>${item}</li>`).join('')
+                },
+                {
+                    icon: 'calendar',
+                    title: 'Calendar Updated',
+                    color: 'purple',
+                    content: 'Meeting scheduled and Google Meet link generated'
+                },
+                {
+                    icon: 'tasks',
+                    title: 'Notion Tasks Updated',
+                    color: 'indigo',
+                    content: 'Follow-up tasks created and assigned'
+                },
+                {
+                    icon: 'reply',
+                    title: 'Response Sent',
+                    color: 'teal',
+                    content: 'AI-generated response sent with meeting details'
+                }
+            ];
+
+            for (let i = 0; i < steps.length; i++) {
+                const step = steps[i];
+                const stepElement = document.createElement('div');
+                stepElement.className = 'bg-white rounded-xl shadow-lg p-6 mb-4 opacity-0';
+                stepElement.innerHTML = `
+                    <div class="flex items-center space-x-4 mb-4">
+                        <div class="w-10 h-10 bg-${step.color}-100 rounded-full flex items-center justify-center">
+                            <i class="fas fa-${step.icon} text-${step.color}-500"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold">${step.title}</h3>
+                            <div class="w-full bg-gray-200 rounded-full h-2 mt-2">
+                                <div class="task-progress bg-${step.color}-500 h-2 rounded-full" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        ${step.content}
+                    </div>
+                `;
+                
+                container.appendChild(stepElement);
+                
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                stepElement.classList.add('fade-in');
+                stepElement.style.opacity = '1';
+                
+                const progressBar = stepElement.querySelector('.task-progress');
+                progressBar.style.width = '100%';
+                
+                await new Promise(resolve => setTimeout(resolve, 2500));
+            }
+        }
+
+        function startNewEmailProcess() {
+            const template = emailTemplates[currentTemplateIndex];
+            processEmail(template);
+            currentTemplateIndex = (currentTemplateIndex + 1) % emailTemplates.length;
+        }
+
+        // Initialize
+        populatePreviousEmails();
+        startNewEmailProcess();
+
+        // Update statistics periodically
+        setInterval(() => {
+        const stats = document.querySelectorAll('.text-2xl.font-bold');
+        stats.forEach(stat => {
+            // Extract only the numeric part of the content
+            const currentValue = parseInt(stat.textContent.replace(/[^\d]/g, ''));
+            
+            // Only update if we have a valid number
+            if (!isNaN(currentValue) && Math.random() > 0.7) {
+                stat.textContent = (currentValue + 1).toString();
+            }
+        });
+        }, 5000);
+
+        // Sample recent actions data
+const recentActions = [
+{
+    action: "Email Response",
+    description: "Sent follow-up to investor@angels.com",
+    timestamp: new Date(),
+    icon: "reply",
+    color: "blue"
+},
+{
+    action: "Meeting Scheduled",
+    description: "Technical review with development team",
+    timestamp: new Date(Date.now() - 1800000), // 30 minutes ago
+    icon: "calendar",
+    color: "green"
+},
+{
+    action: "Task Created",
+    description: "Update investor pitch deck",
+    timestamp: new Date(Date.now() - 3600000), // 1 hour ago
+    icon: "tasks",
+    color: "purple"
+}
+];
+
+function formatTimeAgo(date) {
+const seconds = Math.floor((new Date() - date) / 1000);
+
+if (seconds < 60) return 'just now';
+if (seconds < 3600) return `${Math.floor(seconds / 60)} minutes ago`;
+if (seconds < 86400) return `${Math.floor(seconds / 3600)} hours ago`;
+return `${Math.floor(seconds / 86400)} days ago`;
+}
+
+function updateRecentActions() {
+const container = document.getElementById('recentActions');
+container.innerHTML = recentActions.map(action => `
+    <div class="flex items-center space-x-4 bg-gray-50 p-4 rounded-lg hover:bg-gray-100 transition-colors">
+        <div class="flex-shrink-0 w-10 h-10 bg-${action.color}-100 rounded-full flex items-center justify-center">
+            <i class="fas fa-${action.icon} text-${action.color}-500"></i>
+        </div>
+        <div class="flex-grow">
+            <div class="font-medium">${action.action}</div>
+            <div class="text-sm text-gray-500">${action.description}</div>
+        </div>
+        <div class="text-xs text-gray-400">
+            ${formatTimeAgo(action.timestamp)}
+        </div>
+    </div>
+`).join('');
+}
+
+// Add a new action
+function addRecentAction(action, description, icon = "check-circle", color = "blue") {
+recentActions.unshift({
+    action,
+    description,
+    timestamp: new Date(),
+    icon,
+    color
+});
+
+// Keep only the 5 most recent actions
+if (recentActions.length > 5) {
+    recentActions.pop();
+}
+
+updateRecentActions();
+}
+
+// Initial update
+updateRecentActions();
+
+// Update timestamps every minute
+setInterval(updateRecentActions, 60000);
+
+// Example of adding new actions when processing emails
+document.addEventListener('DOMContentLoaded', () => {
+// Simulate some actions happening over time
+setTimeout(() => {
+    addRecentAction(
+        "Email Categorized",
+        "AI analysis complete for partnership@vendor.com",
+        "tag",
+        "indigo"
+    );
+}, 3000);
+
+setTimeout(() => {
+    addRecentAction(
+        "Calendar Updated",
+        "Team sync scheduled for tomorrow",
+        "calendar-plus",
+        "green"
+    );
+}, 7000);
+});
+    </script>
+</body>
+</html>
+
+

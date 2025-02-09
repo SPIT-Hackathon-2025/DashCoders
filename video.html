@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Meet Audio to Transcript & Summary</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f4f8;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            flex-direction: column;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 36px;
+            text-align: center;
+        }
+        .container {
+            width: 100%;
+            max-width: 700px;
+            text-align: center;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        .btn {
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            padding: 15px 32px;
+            font-size: 18px;
+            cursor: pointer;
+            border-radius: 5px;
+            margin: 10px;
+            transition: 0.3s ease;
+            width: 200px;
+        }
+        .btn:hover {
+            background-color: #45a049;
+        }
+        .btn:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        .button-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        #status {
+            margin-top: 30px;
+            width: 100%;
+        }
+        .message {
+            background-color: #fff;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .message.success {
+            background-color: #e8f5e9;
+            border-left: 5px solid #4CAF50;
+        }
+        .message.error {
+            background-color: #ffebee;
+            border-left: 5px solid #f44336;
+        }
+        .message.info {
+            background-color: #f0f4c3;
+            border-left: 5px solid #ffeb3b;
+        }
+        #summary {
+            margin-top: 30px;
+            width: 100%;
+            max-width: 600px;
+            padding: 20px;
+            background-color: #ffffff;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            display: none;
+        }
+        #summary h3 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎤 Google Meet Transcript & Summary</h1>
+        <div class="button-container">
+            <button id="startBtn" class="btn">Start Google Meet</button>
+            <button id="endBtn" class="btn" disabled>Meeting Ended</button>
+        </div>
+        <div id="status"></div>
+        <div id="summary">
+            <h3>📄 Transcript</h3>
+            <p id="transcript">Waiting for the transcript...</p>
+            <h3>📝 Summary</h3>
+            <p id="summaryText">Waiting for the summary...</p>
+        </div>
+    </div>
+    <script>
+        document.getElementById('startBtn').addEventListener('click', function() {
+            updateStatus("info", "🎧 Audio recording in progress... Please wait.");
+            fetch('/start_process', { method: 'POST' })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === "started") {
+                        updateStatus("info", "🎤 Google Meet joined, recording started...");
+                        document.getElementById('startBtn').disabled = true;
+                        document.getElementById('endBtn').disabled = false;
+                    }
+                })
+                .catch(error => {
+                    updateStatus("error", "❌ Error starting the process.");
+                });
+        });
+
+        document.getElementById('endBtn').addEventListener('click', function() {
+            updateStatus("info", "⏹ Meeting ended, stopping the recording...");
+            fetch('/end_meeting', { method: 'POST' })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === "stopped") {
+                        document.getElementById('startBtn').disabled = false;
+                        document.getElementById('endBtn').disabled = true;
+                        getTranscriptAndSummary();
+                    }
+                })
+                .catch(error => {
+                    updateStatus("error", "❌ Error stopping the recording.");
+                });
+        });
+
+        function getTranscriptAndSummary() {
+            fetch('/get_transcript_and_summary')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('transcript').innerText = data.transcript;
+                    document.getElementById('summaryText').innerText = data.summary;
+                    if (data.transcript.startsWith("Error") || data.transcript.includes("not found")) {
+                        updateStatus("error", "❌ Error with the transcript.");
+                    } else {
+                        updateStatus("success", "✅ Process completed successfully!");
+                        document.getElementById('summary').style.display = 'block';
+                    }
+                });
+        }
+
+        function updateStatus(type, message) {
+            const statusDiv = document.getElementById("status");
+            statusDiv.innerHTML = `<div class="message ${type}">${message}</div>`;
+        }
+    </script>
+</body>
+</html>

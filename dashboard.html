@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SP-TBI Advanced AI Assistant Dashboard</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #1a365d 0%, #2563eb 100%);
+        }
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 4px;
+        }
+        .calendar-day {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .calendar-day:hover {
+            transform: scale(1.1);
+        }
+        .ai-agent-card {
+            transition: all 0.3s;
+        }
+        .ai-agent-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        .pulse-dot {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(0.95); opacity: 0.5; }
+            50% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(0.95); opacity: 0.5; }
+        }
+        .activity-line {
+            position: absolute;
+            left: 15px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background-color: #e5e7eb;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <div class="flex h-screen">
+        <!-- Enhanced Sidebar -->
+        <div class="w-72 bg-white shadow-lg">
+            <div class="p-6">
+                <div class="flex items-center space-x-3 mb-8">
+                    <div class="w-10 h-10 rounded-full gradient-bg flex items-center justify-center">
+                        <i class="fas fa-robot text-white"></i>
+                    </div>
+                    <h2 class="text-xl font-bold">SP-TBI Assistant</h2>
+                </div>
+
+                <!-- AI Agents Status -->
+                <div class="mb-6">
+                    <h3 class="text-sm font-semibold text-gray-600 mb-4">AI AGENTS STATUS</h3>
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between p-3 bg-green-50 rounded-lg">
+                            <a href="general.html" class="flex items-center">
+                                <i class="fas fa-user-tie text-green-500 mr-2"></i>
+                                Executive Assistant
+                            </a>
+                            <span class="flex items-center">
+                                <span class="w-2 h-2 bg-green-500 rounded-full pulse-dot"></span>
+                                <span class="text-xs text-green-600 ml-2">Active</span>
+                            </span>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
+                            <a href="https://www.notion.so/194588bb4218810cbfd6d66355b3a909?v=194588bb4218818789aa000c8971dbc7 " class="flex items-center">
+                                <i class="fas fa-tasks text-blue-500 mr-2"></i>
+                                Task Manager
+                            </a>
+                            <span class="flex items-center">
+                                <span class="w-2 h-2 bg-blue-500 rounded-full pulse-dot"></span>
+                                <span class="text-xs text-blue-600 ml-2">Processing</span>
+                            </span>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-purple-50 rounded-lg">
+                            <span class="flex items-center">
+                                <i class="fas fa-calendar text-purple-500 mr-2"></i>
+                                Calendar Agent
+                            </span>
+                            <span class="flex items-center">
+                                <span class="w-2 h-2 bg-purple-500 rounded-full pulse-dot"></span>
+                                <span class="text-xs text-purple-600 ml-2">Scheduling</span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Email Labels -->
+                <div class="mb-6">
+                    <h3 class="text-sm font-semibold text-gray-600 mb-4">EMAIL FILTERS</h3>
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between p-3 rounded-lg hover:bg-gray-50">
+                            <span class="flex items-center">
+                                <i class="fas fa-star text-yellow-400 mr-2"></i>
+                                Priority
+                            </span>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" class="sr-only peer" checked>
+                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                            </label>
+                        </div>
+                        <div class="flex items-center justify-between p-3 rounded-lg hover:bg-gray-50">
+                            <span class="flex items-center">
+                                <i class="fas fa-clock text-red-400 mr-2"></i>
+                                Urgent
+                            </span>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" class="sr-only peer">
+                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-red-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-red-600"></div>
+                            </label>
+                        </div>
+                        <div class="flex items-center justify-between p-3 rounded-lg hover:bg-gray-50">
+                            <span class="flex items-center">
+                                <i class="fas fa-users text-green-400 mr-2"></i>
+                                Team
+                            </span>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" class="sr-only peer" checked>
+                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-green-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600"></div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div>
+                    <h3 class="text-sm font-semibold text-gray-600 mb-4">QUICK ACTIONS</h3>
+                    <div class="space-y-3">
+                        <button class="w-full flex items-center justify-between p-3 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">
+                            <a href=" video.html" class="flex items-center">
+                                <i class="fas fa-plus-circle text-blue-500 mr-2"></i>
+                                New Meeting
+                            </a>
+                            <i class="fas fa-chevron-right text-blue-500"></i>
+                        </button>
+                        <button class="w-full flex items-center justify-between p-3 bg-green-50 rounded-lg hover:bg-green-100 transition-colors">
+                            <span class="flex items-center">
+                                <i class="fas fa-tasks text-green-500 mr-2"></i>
+                                Create Task
+                            </span>
+                            <i class="fas fa-chevron-right text-green-500"></i>
+                        </button>
+                        <button class="w-full flex items-center justify-between p-3 bg-purple-50 rounded-lg hover:bg-purple-100 transition-colors">
+                            <span class="flex items-center">
+                                <i class="fas fa-file-alt text-purple-500 mr-2"></i>
+                                New Document
+                            </span>
+                            <i class="fas fa-chevron-right text-purple-500"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-1 overflow-y-auto custom-scrollbar">
+            <div class="p-8">
+                <!-- Header -->
+                <div class="flex justify-between items-center mb-8">
+                    <div>
+                        <h1 class="text-2xl font-bold mb-2">Welcome Back, Team!</h1>
+                        <p class="text-gray-600">Here's what's happening at SP-TBI today</p>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <button class="relative bg-white p-3 rounded-full shadow hover:shadow-md">
+                            <i class="fas fa-bell text-gray-600"></i>
+                            <span class="absolute top-0 right-0 w-3 h-3 bg-red-500 rounded-full"></span>
+                        </button>
+                        <div class="flex items-center space-x-3 bg-white rounded-full shadow px-4 py-2">
+                            <img src="images (1).jpg" alt="User" class="w-8 h-8 rounded-full">
+                            <span class="font-medium">Admin</span>
+                            <i class="fas fa-chevron-down text-gray-400"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AI Insights -->
+                <div class="grid grid-cols-3 gap-6 mb-8">
+                    <div class="ai-agent-card bg-gradient-to-br from-blue-500 to-blue-600 p-6 rounded-xl text-white">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-brain text-2xl"></i>
+                            </div>
+                            <span class="text-white/80">Last 24h</span>
+                        </div>
+                        <h3 class="text-2xl font-bold mb-2">124</h3>
+                        <p class="text-white/80">Tasks Automated</p>
+                        <div class="mt-4 flex items-center text-sm">
+                            <i class="fas fa-arrow-up mr-1"></i>
+                            <span>12% from yesterday</span>
+                        </div>
+                    </div>
+                    <div class="ai-agent-card bg-gradient-to-br from-green-500 to-green-600 p-6 rounded-xl text-white">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-clock text-2xl"></i>
+                            </div>
+                            <span class="text-white/80">This Week</span>
+                        </div>
+                        <h3 class="text-2xl font-bold mb-2">47.5 hrs</h3>
+                        <p class="text-white/80">Time Saved</p>
+                        <div class="mt-4 flex items-center text-sm">
+                            <i class="fas fa-arrow-up mr-1"></i>
+                            <span>8% improvement</span>
+                        </div>
+                    </div>
+                    <div class="ai-agent-card bg-gradient-to-br from-purple-500 to-purple-600 p-6 rounded-xl text-white">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-robot text-2xl"></i>
+                            </div>
+                            <span class="text-white/80">AI Actions</span>
+                        </div>
+                        <h3 class="text-2xl font-bold mb-2">89.2%</h3>
+                        <p class="text-white/80">Accuracy Rate</p>
+                        <div class="mt-4 flex items-center text-sm">
+                            <i class="fas fa-check-circle mr-1"></i>
+                            <span>High Performance</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Calendar and Tasks Section -->
+                <div class="grid grid-cols-3 gap-6 mb-8">
+                    <!-- Calendar -->
+                    <div class="col-span-2 bg-white rounded-xl shadow-lg p-6">
+                        <div class="flex justify-between items-center mb-6">
+                            <h2 class="text-lg font-semibold">October 2024</h2>
+                            <div class="flex space-x-2">
+                                <button class="p-2 hover:bg-gray-100 rounded-lg">
+                                    <i class="fas fa-chevron-left"></i>
+                                </button>
+                                <button class="p-2 hover:bg-gray-100 rounded-lg">
+                                    <i class="fas fa-chevron-right"></i>
+                                </button>
+                            </div>
+                        </div><!DOCTYPE html>
+                        <!-- Previous code remains the same until the Calendar section -->
+                                                <!-- Calendar Grid -->
+                                                <div class="calendar-grid mb-4">
+                                                    <div class="text-sm font-medium text-gray-500">Sun</div>
+                                                    <div class="text-sm font-medium text-gray-500">Mon</div>
+                                                    <div class="text-sm font-medium text-gray-500">Tue</div>
+                                                    <div class="text-sm font-medium text-gray-500">Wed</div>
+                                                    <div class="text-sm font-medium text-gray-500">Thu</div>
+                                                    <div class="text-sm font-medium text-gray-500">Fri</div>
+                                                    <div class="text-sm font-medium text-gray-500">Sat</div>
+                                                    
+                                                    <!-- Calendar Days -->
+                                                    <div class="calendar-day bg-gray-100">25</div>
+                                                    <div class="calendar-day bg-gray-100">26</div>
+                                                    <div class="calendar-day bg-gray-100">27</div>
+                                                    <div class="calendar-day bg-gray-100">28</div>
+                                                    <div class="calendar-day bg-gray-100">29</div>
+                                                    <div class="calendar-day bg-gray-100">30</div>
+                                                    <div class="calendar-day">1</div>
+                                                    <!-- October Days with different background colors -->
+                                                    <div class="calendar-day">2</div>
+                                                    <div class="calendar-day bg-green-100">3</div>
+                                                    <div class="calendar-day">4</div>
+                                                    <div class="calendar-day bg-red-100">5</div>
+                                                    <div class="calendar-day">6</div>
+                                                    <div class="calendar-day bg-green-100">7</div>
+                                                    <div class="calendar-day">8</div>
+                                                    <div class="calendar-day bg-red-100">9</div>
+                                                    <div class="calendar-day">10</div>
+                                                    <div class="calendar-day bg-green-100">11</div>
+                                                    <div class="calendar-day">12</div>
+                                                    <div class="calendar-day bg-red-100">13</div>
+                                                    <div class="calendar-day">14</div>
+                                                    <div class="calendar-day bg-green-100">15</div>
+                                                    <!-- Add more days as needed -->
+                                                </div>
+                        
+                                                <!-- Calendar Legend -->
+                                                <div class="flex space-x-4 text-sm">
+                                                    <div class="flex items-center">
+                                                        <div class="w-3 h-3 bg-green-100 rounded mr-2"></div>
+                                                        <span>Available Slots</span>
+                                                    </div>
+                                                    <div class="flex items-center">
+                                                        <div class="w-3 h-3 bg-red-100 rounded mr-2"></div>
+                                                        <span>Busy</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                        
+                                            <!-- AI Agent Activity -->
+                                            <div class="bg-white rounded-xl shadow-lg p-6">
+                                                <h2 class="text-lg font-semibold mb-6">AI Agent Activity</h2>
+                                                <div class="space-y-6">
+                                                    <div class="relative pl-8">
+                                                        <div class="activity-line"></div>
+                                                        <div class="flex items-center mb-2">
+                                                            <div class="absolute left-0 w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                                                                <i class="fas fa-envelope text-blue-500"></i>
+                                                            </div>
+                                                            <span class="text-sm font-medium ml-4">Email Processing</span>
+                                                        </div>
+                                                        <p class="text-sm text-gray-600 ml-4">Sorted 45 emails by priority</p>
+                                                        <span class="text-xs text-gray-500 ml-4">2 minutes ago</span>
+                                                    </div>
+                        
+                                                    <div class="relative pl-8">
+                                                        <div class="activity-line"></div>
+                                                        <div class="flex items-center mb-2">
+                                                            <div class="absolute left-0 w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                                                                <i class="fas fa-calendar-check text-green-500"></i>
+                                                            </div>
+                                                            <span class="text-sm font-medium ml-4">Meeting Scheduled</span>
+                                                        </div>
+                                                        <p class="text-sm text-gray-600 ml-4">Team sync for Project X</p>
+                                                        <span class="text-xs text-gray-500 ml-4">15 minutes ago</span>
+                                                    </div>
+                        
+                                                    <div class="relative pl-8">
+                                                        <div class="activity-line"></div>
+                                                        <div class="flex items-center mb-2">
+                                                            <div class="absolute left-0 w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
+                                                                <i class="fas fa-file-alt text-purple-500"></i>
+                                                            </div>
+                                                            <span class="text-sm font-medium ml-4">Document Generated</span>
+                                                        </div>
+                                                        <p class="text-sm text-gray-600 ml-4">Meeting minutes created</p>
+                                                        <span class="text-xs text-gray-500 ml-4">1 hour ago</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                        
+                                        <!-- AI Performance Metrics & Recent Tasks -->
+                                        <div class="grid grid-cols-2 gap-6">
+                                            <!-- AI Performance Metrics -->
+                                            <div class="bg-white rounded-xl shadow-lg p-6">
+                                                <h2 class="text-lg font-semibold mb-6">AI Performance Metrics</h2>
+                                                <div class="space-y-4">
+                                                    <div>
+                                                        <div class="flex justify-between mb-2">
+                                                            <span class="text-sm font-medium">Response Time</span>
+                                                            <span class="text-sm text-green-500">Excellent</span>
+                                                        </div>
+                                                        <div class="w-full bg-gray-200 rounded-full h-2">
+                                                            <div class="bg-green-500 rounded-full h-2" style="width: 95%"></div>
+                                                        </div>
+                                                    </div>
+                                                    <div>
+                                                        <div class="flex justify-between mb-2">
+                                                            <span class="text-sm font-medium">Task Completion</span>
+                                                            <span class="text-sm text-blue-500">Very Good</span>
+                                                        </div>
+                                                        <div class="w-full bg-gray-200 rounded-full h-2">
+                                                            <div class="bg-blue-500 rounded-full h-2" style="width: 88%"></div>
+                                                        </div>
+                                                    </div>
+                                                    <div>
+                                                        <div class="flex justify-between mb-2">
+                                                            <span class="text-sm font-medium">Accuracy Rate</span>
+                                                            <span class="text-sm text-purple-500">Good</span>
+                                                        </div>
+                                                        <div class="w-full bg-gray-200 rounded-full h-2">
+                                                            <div class="bg-purple-500 rounded-full h-2" style="width: 92%"></div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                        
+                                            <!-- Recent Tasks -->
+                                            <div class="bg-white rounded-xl shadow-lg p-6">
+                                                <h2 class="text-lg font-semibold mb-6">Recent Tasks</h2>
+                                                <div class="space-y-4">
+                                                    <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                                                        <div class="flex items-center">
+                                                            <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                                                                <i class="fas fa-file-alt text-blue-500"></i>
+                                                            </div>
+                                                            <div class="ml-4">
+                                                                <h3 class="text-sm font-medium">Report Generation</h3>
+                                                                <p class="text-xs text-gray-500">Automated weekly report</p>
+                                                            </div>
+                                                        </div>
+                                                        <span class="text-xs bg-green-100 text-green-600 px-2 py-1 rounded">Completed</span>
+                                                    </div>
+                                                    <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                                                        <div class="flex items-center">
+                                                            <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                                                                <i class="fas fa-tasks text-purple-500"></i>
+                                                            </div>
+                                                            <div class="ml-4">
+                                                                <h3 class="text-sm font-medium">Task Assignment</h3>
+                                                                <p class="text-xs text-gray-500">Distributed team tasks</p>
+                                                            </div>
+                                                        </div>
+                                                        <span class="text-xs bg-blue-100 text-blue-600 px-2 py-1 rounded">In Progress</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        
+                            <script>
+                                // Toggle functionality for labels
+                                document.querySelectorAll('input[type="checkbox"]').forEach(toggle => {
+                                    toggle.addEventListener('change', function() {
+                                        const label = this.closest('.hover\\:bg-gray-50');
+                                        if (this.checked) {
+                                            label.classList.add('bg-gray-50');
+                                        } else {
+                                            label.classList.remove('bg-gray-50');
+                                        }
+                                    });
+                                });
+                        
+                                // Calendar day hover effect
+                                document.querySelectorAll('.calendar-day').forEach(day => {
+                                    day.addEventListener('click', function() {
+                                        document.querySelectorAll('.calendar-day').forEach(d => 
+                                            d.classList.remove('ring-2', 'ring-blue-500'));
+                                        this.classList.add('ring-2', 'ring-blue-500');
+                                    });
+                                });
+                        
+                                // Randomly color some calendar days (for demonstration)
+                                function randomizeCalendarColors() {
+                                    document.querySelectorAll('.calendar-day').forEach(day => {
+                                        if (Math.random() < 0.3) {
+                                            day.classList.add(Math.random() < 0.5 ? 'bg-green-100' : 'bg-red-100');
+                                        }
+                                    });
+                                }
+                        
+                                // Initialize calendar colors
+                                randomizeCalendarColors();
+                        
+                                // AI Agent status simulation
+                                function updateAgentStatus() {
+                                    const statuses = ['Active', 'Processing', 'Scheduling'];
+                                    const colors = ['green', 'blue', 'purple'];
+                                    document.querySelectorAll('.pulse-dot').forEach((dot, index) => {
+                                        const randomStatus = Math.floor(Math.random() * statuses.length);
+                                        const nextSibling = dot.nextElementSibling;
+                                        nextSibling.textContent = statuses[randomStatus];
+                                        nextSibling.className = `text-xs text-${colors[randomStatus]}-600 ml-2`;
+                                        dot.className = `w-2 h-2 bg-${colors[randomStatus]}-500 rounded-full pulse-dot`;
+                                    });
+                                }
+                        
+                                // Update agent status every 5 seconds
+                                setInterval(updateAgentStatus, 5000);
+                        
+                                // Notification badge animation
+                                const notificationBadge = document.querySelector('.bg-red-500');
+                                setInterval(() => {
+                                    notificationBadge.classList.toggle('scale-110');
+                                }, 2000);
+                            </script>
+                        </body>
+                        </html>
